@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>北稻智联智慧农业监测系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#00B4FF', // 主蓝色
+                        secondary: '#0066CC', // 深蓝色
+                        accent: '#00FFCC', // 青色强调
+                        success: '#00E676',
+                        warning: '#FFB300',
+                        danger: '#FF5252',
+                        dark: '#081022',
+                        darker: '#050A14',
+                        panel: 'rgba(16, 32, 64, 0.85)'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .panel-border {
+                border: 1px solid rgba(0, 180, 255, 0.3);
+                box-shadow: 0 0 15px rgba(0, 180, 255, 0.1), inset 0 0 8px rgba(0, 180, 255, 0.05);
+            }
+            .glow-text {
+                text-shadow: 0 0 10px rgba(0, 180, 255, 0.7);
+            }
+            .glow-border {
+                box-shadow: 0 0 10px rgba(0, 180, 255, 0.5);
+            }
+            .title-bar {
+                background: linear-gradient(90deg, transparent, rgba(0, 102, 204, 0.8), transparent);
+                border-top: 1px solid rgba(0, 180, 255, 0.5);
+                border-bottom: 1px solid rgba(0, 180, 255, 0.5);
+            }
+            .map-marker {
+                animation: pulse 2s infinite;
+            }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 180, 255, 0.5);
+            border-radius: 2px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 180, 255, 0.8);
+        }
+        
+        /* 科技感背景 */
+        body {
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 102, 204, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 180, 255, 0.1) 0%, transparent 50%),
+                linear-gradient(to bottom, #081022, #050A14);
+            background-attachment: fixed;
+        }
+        
+        /* 地图背景 */
+        .map-container {
+            background-image: url('../image/北方稻田高空实拍图生成.png');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        /* 网格覆盖层 */
+        .grid-overlay {
+            background-image: 
+                linear-gradient(rgba(0, 180, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 180, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+    </style>
+</head>
+<body class="text-white font-sans antialiased overflow-hidden">
+    <div class="h-screen w-screen flex flex-col">
+        <!-- 顶部标题栏 -->
+        <header class="title-bar h-16 flex items-center justify-center relative z-20">
+            <div class="absolute left-4 flex items-center space-x-3">
+                <button class="w-8 h-8 rounded bg-panel panel-border flex items-center justify-center hover:bg-primary/20 transition-colors">
+                    <i class="fa fa-home text-primary"></i>
+                </button>
+                <button class="w-8 h-8 rounded bg-panel panel-border flex items-center justify-center hover:bg-primary/20 transition-colors">
+                    <i class="fa fa-refresh text-primary"></i>
+                </button>
+                <button class="w-8 h-8 rounded bg-panel panel-border flex items-center justify-center hover:bg-primary/20 transition-colors">
+                    <i class="fa fa-search text-primary"></i>
+                </button>
+                <button class="px-3 h-8 rounded bg-panel panel-border flex items-center justify-center hover:bg-primary/20 transition-colors text-sm">
+                    <i class="fa fa-eye text-primary mr-2"></i>
+                    视图模式
+                </button>
+            </div>
+            
+            <h1 class="text-2xl font-bold glow-text tracking-wider">
+                «« 北稻智联智慧农业监测系统 »»
+            </h1>
+            
+            <div class="absolute right-4 flex items-center space-x-3">
+                <div class="text-sm">
+                    <span class="text-primary">系统时间:</span> 
+                    <span id="system-time">2026-05-31 13:45:20</span>
+                </div>
+                <button class="px-3 h-8 rounded bg-primary/20 panel-border flex items-center justify-center hover:bg-primary/30 transition-colors text-sm">
+                    <i class="fa fa-cog mr-2"></i>
+                    管理系统
+                </button>
+            </div>
+        </header>
+        
+        <!-- 子标题栏 -->
+        <div class="h-8 bg-secondary/30 flex items-center justify-center border-b border-primary/30">
+            <h2 class="text-lg font-medium">农田总览 · 监测点1013 · <span class="text-success">运行中</span></h2>
+        </div>
+        
+        <!-- 主内容区 -->
+        <div class="flex-1 flex overflow-hidden">
+            <!-- 左侧面板 -->
+            <div class="w-80 bg-panel panel-border m-3 rounded-lg overflow-hidden flex flex-col">
+                <!-- 设备选择 -->
+                <div class="p-3 border-b border-primary/30 flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fa fa-microchip text-primary mr-2"></i>
+                        <span class="font-medium">无人机-演示设备5 (高空)</span>
+                    </div>
+                    <button class="text-primary hover:text-accent text-sm">
+                        更换 <i class="fa fa-chevron-down ml-1"></i>
+                    </button>
+                </div>
+                
+                <!-- 实时视频 -->
+                <div class="p-3 border-b border-primary/30">
+                    <div class="relative rounded overflow-hidden border border-primary/30 h-40">
+                        <img src="../image/北方稻田高空实拍图生成.png" alt="实时监控" class="w-full h-full object-cover">
+                        <div class="absolute top-2 left-2 bg-danger/80 text-white text-xs px-2 py-1 rounded flex items-center">
+                            <span class="w-2 h-2 rounded-full bg-white mr-2 animate-pulse"></span>
+                            实时直播
+                        </div>
+                        <div class="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
+                            HD 1080p
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 飞行参数 -->
+                <div class="flex-1 p-3 overflow-y-auto">
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="bg-darker/50 rounded p-2">
+                            <p class="text-xs text-gray-400">飞行高度</p>
+                            <p class="text-lg font-bold text-primary">165m</p>
+                        </div>
+                        <div class="bg-darker/50 rounded p-2">
+                            <p class="text-xs text-gray-400">飞行速度</p>
+                            <p class="text-lg font-bold text-primary">5m/s</p>
+                        </div>
+                        <div class="bg-darker/50 rounded p-2">
+                            <p class="text-xs text-gray-400">飞行方向</p>
+                            <p class="text-lg font-bold text-primary">134°</p>
+                        </div>
+                        <div class="bg-darker/50 rounded p-2">
+                            <p class="text-xs text-gray-400">剩余电量</p>
+                            <p class="text-lg font-bold text-success">89%</p>
+                        </div>
+                        <div class="bg-darker/50 rounded p-2">
+                            <p class="text-xs text-gray-400">飞行时间</p>
+                            <p class="text-lg font-bold text-primary">18min32s</p>
+                        </div>
+                        <div class="bg-darker/50 rounded p-2">
+                            <p class="text-xs text-gray-400">信号强度</p>
+                            <p class="text-lg font-bold text-success">98%</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 飞行速度控制 -->
+                    <div class="mb-4">
+                        <div class="flex items-center justify-between mb-1">
+                            <p class="text-xs text-gray-400">飞行速度</p>
+                            <p class="text-xs text-primary">38%</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="w-6 h-6 rounded bg-primary/20 flex items-center justify-center hover:bg-primary/30">
+                                <i class="fa fa-play text-xs"></i>
+                            </button>
+                            <div class="flex-1 h-2 bg-darker rounded-full overflow-hidden">
+                                <div class="bg-primary h-full rounded-full" style="width: 38%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 任务信息 -->
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">航线起点:</span>
+                            <span>一号农田东区</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">航线终点:</span>
+                            <span>三号农田西区</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">机 型:</span>
+                            <span>大疆M300</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">编 号:</span>
+                            <span>agri_drone_005</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">实时位置:</span>
+                            <span>二号农田中部</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">经 纬 度:</span>
+                            <span class="text-xs">120.164708051806, 30.188813187125223</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 操作按钮 -->
+                    <div class="mt-4 flex space-x-2">
+                        <button class="flex-1 py-2 rounded bg-primary/20 border border-primary/50 hover:bg-primary/30 transition-colors text-sm">
+                            <i class="fa fa-download mr-1"></i> 下载航线
+                        </button>
+                        <button class="flex-1 py-2 rounded bg-primary/20 border border-primary/50 hover:bg-primary/30 transition-colors text-sm">
+                            <i class="fa fa-cog mr-1"></i> 设置
+                        </button>
+                    </div>
+                    
+                    <!-- 环境参数 -->
+                    <div class="mt-4 pt-4 border-t border-primary/30">
+                        <h3 class="font-medium mb-3 flex items-center">
+                            <i class="fa fa-thermometer-half text-primary mr-2"></i>
+                            环境参数
+                        </h3>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-darker/50 rounded p-2">
+                                <p class="text-xs text-gray-400">环境温度</p>
+                                <p class="text-lg font-bold text-red-400">24.5°C</p>
+                            </div>
+                            <div class="bg-darker/50 rounded p-2">
+                                <p class="text-xs text-gray-400">空气湿度</p>
+                                <p class="text-lg font-bold text-blue-400">68%</p>
+                            </div>
+                            <div class="bg-darker/50 rounded p-2">
+                                <p class="text-xs text-gray-400">土壤湿度</p>
+                                <p class="text-lg font-bold text-amber-400">52%</p>
+                            </div>
+                            <div class="bg-darker/50 rounded p-2">
+                                <p class="text-xs text-gray-400">光照强度</p>
+                                <p class="text-lg font-bold text-yellow-400">32.5klux</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 中间地图区域 -->
+            <div class="flex-1 m-3 rounded-lg overflow-hidden relative map-container">
+                <!-- 网格覆盖层 -->
+                <div class="absolute inset-0 grid-overlay"></div>
+                
+                <!-- 地图内容 -->
+                <div class="absolute inset-0">
+                    <!-- 无人机位置 -->
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-float">
+                        <div class="relative">
+                            <div class="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center map-marker">
+                                <i class="fa fa-plane text-2xl text-primary transform rotate-45"></i>
+                            </div>
+                            <!-- 信息气泡 -->
+                            <div class="absolute -top-20 left-1/2 transform -translate-x-1/2 bg-panel panel-border rounded p-2 text-xs whitespace-nowrap">
+                                <p>作物长势指数: 87.2%</p>
+                                <p>土壤墒情: 52.3%</p>
+                                <p>病虫害风险: 低</p>
+                                <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 w-3 h-3 bg-panel border-r border-b border-primary/30"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 监测点标记 -->
+                    <div class="absolute top-1/3 left-1/4 w-4 h-4 rounded-full bg-success map-marker"></div>
+                    <div class="absolute top-2/3 left-1/3 w-4 h-4 rounded-full bg-success map-marker"></div>
+                    <div class="absolute top-1/4 left-2/3 w-4 h-4 rounded-full bg-warning map-marker"></div>
+                    <div class="absolute bottom-1/3 right-1/4 w-4 h-4 rounded-full bg-danger map-marker"></div>
+                    
+                    <!-- 飞行轨迹 -->
+                    <svg class="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M 100 500 Q 200 400 300 350 T 500 300 T 700 250 T 900 200" 
+                              stroke="#00B4FF" 
+                              stroke-width="3" 
+                              fill="none" 
+                              stroke-dasharray="10,5"
+                              opacity="0.7"/>
+                    </svg>
+                </div>
+                
+                <!-- 地图控制按钮 -->
+                <div class="absolute top-4 right-4 flex flex-col space-y-2">
+                    <button class="w-10 h-10 rounded bg-panel panel-border flex items-center justify-center hover:bg-primary/20 transition-colors">
+                        <i class="fa fa-plus text-primary"></i>
+                    </button>
+                    <button class="w-10 h-10 rounded bg-panel panel-border flex items-center justify-center hover:bg-primary/20 transition-colors">
+                        <i class="fa fa-minus text-primary"></i>
+                    </button>
+                    <button class="w-10 h-10 rounded bg-panel panel-border flex items-center justify-center hover:bg-primary/20 transition-colors">
+                        <i class="fa fa-arrows text-primary"></i>
+                    </button>
+                    <button class="w-10 h-10 rounded bg-panel panel-border flex items-center justify-center hover:bg-primary/20 transition-colors">
+                        <i class="fa fa-map text-primary"></i>
+                    </button>
+                </div>
+                
+                <!-- 右下角功能按钮 -->
+                <div class="absolute bottom-4 right-4 flex flex-col space-y-2">
+                    <button class="w-12 h-12 rounded bg-primary panel-border flex items-center justify-center hover:bg-primary/80 transition-colors glow-border">
+                        <i class="fa fa-play text-xl"></i>
+                    </button>
+                    <button class="w-12 h-12 rounded bg-panel panel-border flex items-center justify-center hover:bg-primary/20 transition-colors">
+                        <i class="fa fa-list text-primary"></i>
+                    </button>
+                    <button class="w-12 h-12 rounded bg-panel panel-border flex items-center justify-center hover:bg-primary/20 transition-colors">
+                        <i class="fa fa-camera text-primary"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 右侧面板 -->
+            <div class="w-80 bg-panel panel-border m-3 rounded-lg overflow-hidden flex flex-col">
+                <!-- 作业情况标题 -->
+                <div class="p-3 border-b border-primary/30 flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fa fa-list-alt text-primary mr-2"></i>
+                        <span class="font-medium">作业情况</span>
+                    </div>
+                    <button class="text-gray-400 hover:text-white">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+                
+                <!-- 作业日志列表 -->
+                <div class="flex-1 overflow-y-auto p-3">
+                    <div class="space-y-4">
+                        <!-- 作业项 1 -->
+                        <div class="border-l-2 border-primary pl-3">
+                            <div class="flex items-center mb-1">
+                                <span class="text-xs text-gray-400">2026-05-31 16:02:14</span>
+                            </div>
+                            <p class="text-sm">无人机已完成巡检准备返航</p>
+                        </div>
+                        
+                        <!-- 作业项 2 -->
+                        <div class="border-l-2 border-success pl-3">
+                            <div class="flex items-center mb-1">
+                                <span class="text-xs text-gray-400">2026-05-31 16:02:13</span>
+                            </div>
+                            <p class="text-sm">停止 农田巡检1013 业务工作流成功了</p>
+                        </div>
+                        
+                        <!-- 作业项 3 -->
+                        <div class="border-l-2 border-primary pl-3">
+                            <div class="flex items-center mb-1">
+                                <span class="text-xs text-gray-400">2026-05-31 16:02:13</span>
+                            </div>
+                            <p class="text-sm">无人机-演示设备5 agri_drone_005 降落，飞行时长:3分11秒</p>
+                        </div>
+                        
+                        <!-- 作业项 4 (带图片) -->
+                        <div class="border-l-2 border-warning pl-3">
+                          <div class="flex items-center mb-1">
+                                <span class="text-xs text-gray-400">2026-05-31 16:00:15</span>
+                            </div>
+                            <p class="text-sm mb-2">在 三号农田东侧 发现了生物破坏事件</p>
+                            <div class="rounded overflow-hidden border border-primary/30 h-24">
+                                <img src="../image/381b22b9779137beb8dfe8179fa7394e.jpg" alt="事件图片" class="w-full h-full object-cover">
+                            </div>
+                        </div>
+                        
+                        <!-- 作业项 5 -->
+                        <div class="border-l-2 border-primary pl-3">
+                            <div class="flex items-center mb-1">
+                                <span class="text-xs text-gray-400">2026-05-31 15:59:03</span>
+                            </div>
+                            <p class="text-sm">无人机已到达第1个航点 一号农田东区</p>
+                        </div>
+                        
+                        <!-- 作业项 6 -->
+                        <div class="border-l-2 border-success pl-3">
+                            <div class="flex items-center mb-1">
+                                <span class="text-xs text-gray-400">2026-05-31 15:59:02</span>
+                            </div>
+                            <p class="text-sm">启动了 农田巡检1013 业务工作流</p>
+                        </div>
+                        
+                        <!-- 作业项 7 -->
+                        <div class="border-l-2 border-primary pl-3">
+                            <div class="flex items-center mb-1">
+                                <span class="text-xs text-gray-400">2026-05-31 15:59:02</span>
+                            </div>
+                            <p class="text-sm">无人机-演示设备5 agri_drone_005 起飞</p>
+                        </div>
+                        
+                        <!-- 更多作业项 -->
+                        <div class="border-l-2 border-primary pl-3">
+                            <div class="flex items-center mb-1">
+                                <span class="text-xs text-gray-400">2026-05-31 15:58:45</span>
+                            </div>
+                            <p class="text-sm">系统自检完成，所有设备正常</p>
+                        </div>
+                        
+                        <div class="border-l-2 border-warning pl-3">
+                            <div class="flex items-center mb-1">
+                                <span class="text-xs text-gray-400">2026-05-31 15:57:30</span>
+                            </div>
+                            <p class="text-sm">一号农田东区土壤湿度低于阈值，建议灌溉</p>
+                        </div>
+                        
+                        <div class="border-l-2 border-primary pl-3">
+                            <div class="flex items-center mb-1">
+                                <span class="text-xs text-gray-400">2026-05-31 15:56:12</span>
+                            </div>
+                            <p class="text-sm">无人机电池电量充足，准备执行任务</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        // 更新系统时间
+        function updateSystemTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            const timeString = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            document.getElementById('system-time').textContent = timeString;
+        }
+        
+        // 每秒更新时间
+        setInterval(updateSystemTime, 1000);
+        updateSystemTime(); // 初始化
+        
+        // 模拟数据更新
+        function updateData() {
+            // 更新飞行高度
+            const height = Math.floor(160 + Math.random() * 10);
+            document.querySelector('.text-lg.font-bold.text-primary').textContent = height + 'm';
+            
+            // 更新剩余电量
+            const battery = Math.floor(85 + Math.random() * 5);
+            document.querySelector('.text-lg.font-bold.text-success').textContent = battery + '%';
+            
+            // 更新环境温度
+            const temp = (24 + Math.random() * 1).toFixed(1);
+            document.querySelector('.text-lg.font-bold.text-red-400').textContent = temp + '°C';
+            
+            // 每10秒更新一次
+            setTimeout(updateData, 10000);
+        }
+        
+        // 启动数据更新
+        setTimeout(updateData, 5000);
+    </script>
+</body>
+</html>

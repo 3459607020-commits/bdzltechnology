@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>北稻智联 - 智慧农业解决方案</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+
+        :root {
+            --primary-color: #0f4c3a;
+            --secondary-color: #f2c94c;
+            --text-color: #333;
+            --light-bg: #f8f9fa;
+            --gradient-primary: linear-gradient(135deg, #0f4c3a 0%, #1a6b52 100%);
+            --gradient-secondary: linear-gradient(135deg, #f2c94c 0%, #f9d770 100%);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            line-height: 1.6;
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* 页面加载动画 */
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-content {
+            text-align: center;
+            color: white;
+        }
+
+        .loader-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: var(--secondary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 导航栏 */
+        header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled {
+            padding: 0.5rem 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-img {
+            height: 50px;
+            width: auto;
+            transition: height 0.3s ease;
+        }
+
+        header.scrolled .logo-img {
+            height: 40px;
+        }
+
+        .logo i {
+            color: var(--secondary-color);
+            font-size: 1.8rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--secondary-color);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links a:hover {
+            color: var(--secondary-color);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .mobile-menu-btn:hover {
+            transform: rotate(90deg);
+        }
+
+        /* 英雄区域 */
+        .hero {
+            background: linear-gradient(rgba(15, 76, 58, 0.85), rgba(15, 76, 58, 0.95)), 
+                        url('https://picsum.photos/id/1039/1920/1080');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            padding: 10rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 L0,100 Z" fill="rgba(255,255,255,0.02)"/></svg>');
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+            opacity: 0.95;
+            line-height: 1.8;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 36px;
+            background: var(--gradient-secondary);
+            color: var(--primary-color);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(242, 201, 76, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(242, 201, 76, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+            margin-left: 1rem;
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background: white;
+            color: var(--primary-color);
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
+        }
+
+        /* 通用动画类 */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s ease;
+        }
+
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .delay-1 { transition-delay: 0.1s; }
+        .delay-2 { transition-delay: 0.2s; }
+        .delay-3 { transition-delay: 0.3s; }
+        .delay-4 { transition-delay: 0.4s; }
+        .delay-5 { transition-delay: 0.5s; }
+
+        /* 视频模块 + 自定义播放器控件 */
+        .video-section {
+            background: var(--light-bg);
+            position: relative;
+        }
+
+        .video-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to bottom, white, transparent);
+        }
+
+        .video-container {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            margin-bottom: 3rem;
+            background: #000;
+        }
+
+        .video-player {
+            width: 100%;
+            height: auto;
+            display: block;
+            aspect-ratio: 16/9;
+            background: #000;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, transparent 60%, rgba(15, 76, 58, 0.8));
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 2rem;
+            color: white;
+            pointer-events: none;
+        }
+
+        .video-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .video-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .video-play-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(242, 201, 76, 0.5);
+            z-index: 10;
+        }
+
+        .video-play-btn:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 10px 30px rgba(242, 201, 76, 0.7);
+        }
+
+        .video-play-btn i {
+            margin-left: 5px;
+        }
+
+        /* 视频控制栏 */
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 12px 16px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 11;
+        }
+        .video-container:hover .video-controls {
+            opacity: 1;
+        }
+
+        /* 进度条 */
+        .progress-wrap {
+            flex: 1;
+            height: 6px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+        }
+        .progress-bar {
+            height: 100%;
+            background: var(--secondary-color);
+            border-radius: 3px;
+            width: 0%;
+        }
+        .progress-buffer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: rgba(255,255,255,0.4);
+            border-radius: 3px;
+        }
+
+        /* 时间 */
+        .video-time {
+            font-size: 14px;
+            min-width: 110px;
+            text-align: center;
+        }
+
+        /* 按钮组 */
+        .ctrl-btn {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+        .ctrl-btn:hover {
+            color: var(--secondary-color);
+        }
+
+        /* 音量滑块 */
+        .volume-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .volume-slider {
+            width: 70px;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            position: relative;
+            cursor: pointer;
+        }
+        .volume-bar {
+            height: 100%;
+            width: 70%;
+            background: var(--secondary-color);
+            border-radius: 2px;
+        }
+
+        /* 播放倍速 */
+        .speed-select {
+            background: rgba(0,0,0,0.4);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 2px 4px;
+            font-size: 14px;
+            border-radius: 4px;
+        }
+
+        /* 特色服务 */
+        .section {
+            padding: 6rem 0;
+            position: relative;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.8rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--gradient-secondary);
+            border-radius: 2px;
+        }
+
+        .section-title p {
+            max-width: 600px;
+            margin: 2rem auto 0;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .service-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .service-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .service-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, var(--primary-color)/10, var(--primary-color)/5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            font-size: 2.2rem;
+            color: var(--primary-color);
+            transition: all 0.4s ease;
+        }
+
+        .service-card:hover .service-icon {
+            background: var(--gradient-primary);
+            color: white;
+            transform: rotateY(360deg);
+        }
+
+        .service-card h3 {
+            margin-bottom: 1.2rem;
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .service-card p {
+            color: #666;
+            line-height: 1.7;
+        }
+
+        /* 平台优势 */
+        .advantages {
+            background: var(--light-bg);
+            position: relative;
+        }
+
+        .advantages::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to bottom, white, transparent);
+        }
+
+        .adv-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .adv-cards-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .adv-list {
+            list-style: none;
+        }
+
+        .adv-list li {
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1.2rem;
+            transition: all 0.3s ease;
+            padding: 1rem;
+            border-radius: 10px;
+        }
+
+        .adv-list li:hover {
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transform: translateX(10px);
+        }
+
+        .adv-list i {
+            color: var(--secondary-color);
+            font-size: 1.4rem;
+            margin-top: 3px;
+            background: var(--primary-color)/10;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .adv-list h4 {
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .adv-image {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            position: relative;
+            height: 320px;
+        }
+
+        .adv-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(15, 76, 58, 0.1), transparent);
+            pointer-events: none;
+        }
+
+        .adv-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .adv-image:hover img {
+            transform: scale(1.05);
+        }
+
+        /* 监测系统预览卡片 */
+        .system-preview-card {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .preview-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .system-preview-card:hover .preview-overlay {
+            opacity: 1;
+        }
+
+        .preview-btn {
+            background: var(--gradient-secondary);
+            color: var(--primary-color);
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            transform: scale(0.8);
+        }
+
+        .system-preview-card:hover .preview-btn {
+            transform: scale(1);
+        }
+
+        .preview-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(242, 201, 76, 0.5);
+        }
+
+        .preview-btn i {
+            font-size: 22px;
+        }
+
+        /* 项目展示模块 */
+        .projects {
+            background: white;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2.5rem;
+        }
+
+        .project-card {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.4s ease;
+            height: 380px;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .project-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .project-card:hover .project-image {
+            transform: scale(1.1);
+        }
+
+        .project-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(15, 76, 58, 0.9), rgba(15, 76, 58, 0.4), transparent);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 2.5rem;
+            color: white;
+            transition: all 0.4s ease;
+        }
+
+        .project-card:hover .project-overlay {
+            background: linear-gradient(to top, rgba(15, 76, 58, 0.95), rgba(15, 76, 58, 0.6), transparent);
+        }
+
+        .project-title {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            transform: translateY(20px);
+            transition: transform 0.4s ease;
+        }
+
+        .project-card:hover .project-title {
+            transform: translateY(0);
+        }
+
+        .project-description {
+            font-size: 1.1rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.4s ease 0.1s;
+            line-height: 1.6;
+        }
+
+        .project-card:hover .project-description {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .project-tag {
+            display: inline-block;
+            background: var(--gradient-secondary);
+            color: var(--primary-color);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s ease 0.05s;
+        }
+
+        .project-card:hover .project-tag {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 模态框样式 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 1600px;
+            height: 90vh;
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            background: var(--gradient-primary);
+            color: #fff;
+            padding: 18px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 32px;
+            cursor: pointer;
+            line-height: 1;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--secondary-color);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .system-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* 数据展示 */
+        .stats {
+            background: var(--gradient-primary);
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 L0,100 Z" fill="rgba(255,255,255,0.02)"/></svg>');
+            opacity: 0.5;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-item {
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-10px);
+        }
+
+        .stat-item h3 {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-color);
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .stat-item p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* 联系我们 */
+        .contact {
+            background: var(--light-bg);
+        }
+
+        .contact-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .contact-info h3 {
+            margin-bottom: 2rem;
+            color: var(--primary-color);
+            font-size: 1.6rem;
+            font-weight: 600;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            padding: 1rem;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+
+        .contact-item:hover {
+            transform: translateX(10px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .contact-item i {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .contact-form {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 14px 18px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(15, 76, 58, 0.1);
+        }
+
+        .contact-form textarea {
+            height: 150px;
+            resize: vertical;
+        }
+
+        /* 页脚 */
+        footer {
+            background: #1a1a1a;
+            color: white;
+            padding: 4rem 0 1.5rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 2rem;
+            color: var(--secondary-color);
+            font-size: 1.3rem;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-section h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--secondary-color);
+            border-radius: 2px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-section a {
+            color: #ccc;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: var(--secondary-color);
+            padding-left: 5px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .social-links a {
+            width: 45px;
+            height: 45px;
+            background: #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .social-links a:hover {
+            background: var(--gradient-secondary);
+            color: var(--primary-color);
+            transform: translateY(-5px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #333;
+            color: #888;
+            font-size: 0.95rem;
+        }
+
+        /* 回到顶部按钮 */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 999;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--gradient-primary);
+                flex-direction: column;
+                padding: 1.5rem;
+                gap: 1.5rem;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero {
+                padding: 6rem 0;
+                background-attachment: scroll;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .btn-outline {
+                margin-left: 0;
+                margin-top: 1rem;
+            }
+
+            .adv-content,
+            .contact-content {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title h2 {
+                font-size: 2rem;
+            }
+
+            .modal-content {
+                height: 85vh;
+            }
+
+            .preview-btn {
+                padding: 12px 24px;
+                font-size: 14px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 2rem;
+            }
+
+            .stat-item h3 {
+                font-size: 2.5rem;
+            }
+
+            .logo-img {
+                height: 40px;
+            }
+
+            header.scrolled .logo-img {
+                height: 35px;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .project-card {
+                height: 300px;
+            }
+
+            .video-play-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+
+            .video-title {
+                font-size: 1.4rem;
+            }
+
+            .video-description {
+                font-size: 1rem;
+            }
+
+            .adv-image {
+                height: 280px;
+            }
+            .video-controls {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .video-time {
+                min-width: 90px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 页面加载动画 -->
+    <div class="page-loader" id="pageLoader">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <h3>北稻智联</h3>
+            <p>正在加载中...</p>
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <header id="header">
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <img src="../image/北稻智联logo透明.png" alt="北稻智联" class="logo-img">
+                </div>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="#home">首页</a></li>
+                    <li><a href="#video">视频</a></li>
+                    <li><a href="#services">服务</a></li>
+                    <li><a href="#advantages">优势</a></li>
+                    <li><a href="#projects">项目案例</a></li>
+                    <li><a href="#stats">数据</a></li>
+                    <li><a href="#contact">联系我们</a></li>
+                </ul>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fa fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 英雄区域 -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <h1>智慧农业，引领未来</h1>
+                <p>北稻智联致力于为农业生产提供全方位的智能化解决方案，通过物联网、大数据和人工智能技术，帮助农民提高产量、降低成本、实现可持续发展。</p>
+                <a href="#services" class="btn">了解更多</a>
+                <a href="#contact" class="btn btn-outline">联系我们</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 视频展示模块（新增全套控制栏） -->
+    <section class="section video-section" id="video">
+        <div class="container">
+            <div class="section-title animate-on-scroll">
+                <h2>走进北稻智联</h2>
+                <p>通过视频了解我们的智慧农业解决方案如何改变传统农业</p>
+            </div>
+            <div class="video-container animate-on-scroll delay-2">
+                <video class="video-player" id="videoPlayer" poster="../image/北稻智联-封面.jpg" preload="metadata">
+                    <source src="../vedio/北稻智联宣传片.mp4" type="video/mp4">
+                    您的浏览器不支持HTML5视频播放
+                </video>
+                <div class="video-play-btn" id="videoPlayBtn">
+                    <i class="fa fa-play"></i>
+                </div>
+                <div class="video-overlay">
+                    <h3 class="video-title">北稻智联智慧农业宣传片</h3>
+                    <p class="video-description">科技赋能农业，让每一寸土地都焕发新的生机</p>
+                </div>
+
+                <!-- 视频控制栏：进度条、时间、音量、倍速、全屏 -->
+                <div class="video-controls">
+                    <button class="ctrl-btn" id="ctrlPlay">
+                        <i class="fa fa-play"></i>
+                    </button>
+                    <div class="progress-wrap" id="progressWrap">
+                        <div class="progress-buffer" id="progressBuffer"></div>
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    <div class="video-time" id="videoTime">00:00 / 00:00</div>
+                    <div class="volume-wrap">
+                        <button class="ctrl-btn" id="volumeBtn">
+                            <i class="fa fa-volume-up"></i>
+                        </button>
+                        <div class="volume-slider" id="volumeSlider">
+                            <div class="volume-bar" id="volumeBar"></div>
+                        </div>
+                    </div>
+                    <select class="speed-select" id="speedSelect">
+                        <option value="0.5">0.5x</option>
+                        <option value="1" selected>1x</option>
+                        <option value="1.25">1.25x</option>
+                        <option value="1.5">1.5x</option>
+                        <option value="2">2x</option>
+                    </select>
+                    <button class="ctrl-btn" id="fullscreenBtn">
+                        <i class="fa fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 特色服务 -->
+    <section class="section" id="services">
+        <div class="container">
+            <div class="section-title animate-on-scroll">
+                <h2>我们的服务</h2>
+                <p>从农田到餐桌，我们提供全产业链的智慧农业解决方案</p>
+            </div>
+            <div class="services-grid">
+                <div class="service-card animate-on-scroll delay-1">
+                    <div class="service-icon">
+                        <i class="fa fa-tachometer"></i>
+                    </div>
+                    <h3>智能监测系统</h3>
+                    <p>实时监测土壤、气象、水质等环境参数，为精准农业提供数据支持。</p>
+                </div>
+                <div class="service-card animate-on-scroll delay-2">
+                    <div class="service-icon">
+                        <i class="fa fa-cogs"></i>
+                    </div>
+                    <h3>自动化控制</h3>
+                    <p>智能灌溉、施肥、通风系统，根据作物需求自动调节生长环境。</p>
+                </div>
+                <div class="service-card animate-on-scroll delay-3">
+                    <div class="service-icon">
+                        <i class="fa fa-line-chart"></i>
+                    </div>
+                    <h3>数据分析平台</h3>
+                    <p>大数据分析作物生长规律，预测产量，优化种植方案。</p>
+                </div>
+                <div class="service-card animate-on-scroll delay-4">
+                    <div class="service-icon">
+                        <i class="fa fa-mobile"></i>
+                    </div>
+                    <h3>移动端应用</h3>
+                    <p>随时随地监控农田状况，远程控制设备，接收异常预警。</p>
+                </div>
+                <div class="service-card animate-on-scroll delay-5">
+                    <div class="service-icon">
+                        <i class="fa fa-shopping-cart"></i>
+                    </div>
+                    <h3>农产品溯源</h3>
+                    <p>全程记录农产品生长、加工、运输信息，保障食品安全。</p>
+                </div>
+                <div class="service-card animate-on-scroll delay-1">
+                    <div class="service-icon">
+                        <i class="fa fa-graduation-cap"></i>
+                    </div>
+                    <h3>技术培训</h3>
+                    <p>为农民提供专业的智慧农业技术培训和现场指导服务。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 平台优势 -->
+    <section class="section advantages" id="advantages">
+        <div class="container">
+            <div class="section-title animate-on-scroll">
+                <h2>平台优势</h2>
+                <p>领先的技术实力和丰富的行业经验，为您提供最可靠的智慧农业服务</p>
+            </div>
+            <div class="adv-content">
+                <div class="animate-on-scroll">
+                    <ul class="adv-list">
+                        <li>
+                            <i class="fa fa-check-circle"></i>
+                            <div>
+                                <h4>精准数据采集</h4>
+                                <p>采用高精度传感器，确保数据准确可靠，为决策提供科学依据。</p>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fa fa-check-circle"></i>
+                            <div>
+                                <h4>稳定可靠的系统</h4>
+                                <p>7×24小时稳定运行，多重备份机制，保障数据安全不丢失。</p>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fa fa-check-circle"></i>
+                            <div>
+                                <h4>易于操作的界面</h4>
+                                <p>简洁直观的用户界面，无需专业知识即可轻松上手使用。</p>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fa fa-check-circle"></i>
+                            <div>
+                                <h4>个性化定制服务</h4>
+                                <p>根据不同作物和种植规模，提供量身定制的解决方案。</p>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fa fa-check-circle"></i>
+                            <div>
+                                <h4>完善的售后服务</h4>
+                                <p>专业的技术团队，提供及时的技术支持和维护服务。</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 两个系统卡片上下排列的容器 -->
+                <div class="adv-cards-group">
+                    <!-- 智能管理系统（上方） -->
+                    <div class="adv-image system-preview-card animate-on-scroll delay-2" id="managePreviewCard">
+                        <img src="../image/北稻智联智能管理系统.jpeg"
+                             alt="北稻智联智能管理系统" 
+                             loading="lazy">
+                        <div class="preview-overlay">
+                            <div class="preview-btn">
+                                <i class="fa fa-play-circle"></i>
+                                点击查看智能管理系统
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 实时监测系统（下方） -->
+                    <div class="adv-image system-preview-card animate-on-scroll delay-3" id="systemPreviewCard">
+                        <img src="../image/系统演示.jpeg"
+                             alt="智慧农业监测系统预览" 
+                             loading="lazy">
+                        <div class="preview-overlay">
+                            <div class="preview-btn">
+                                <i class="fa fa-play-circle"></i>
+                                点击查看实时监测系统
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 项目展示模块 -->
+    <section class="section projects" id="projects">
+        <div class="container">
+            <div class="section-title animate-on-scroll">
+                <h2>项目案例</h2>
+                <p>我们已成功为众多农业企业提供智慧农业解决方案</p>
+            </div>
+            <div class="projects-grid">
+                <div class="project-card animate-on-scroll delay-1">
+                    <img src="../image/东北水稻智慧种植基地.png" alt="东北水稻智慧种植基地" class="project-image">
+                    <div class="project-overlay">
+                        <span class="project-tag">大田种植</span>
+                        <h3 class="project-title">东北水稻智慧种植基地</h3>
+                        <p class="project-description">实现了水稻种植全程智能化管理，平均增产28%，节水35%</p>
+                    </div>
+                </div>
+                <div class="project-card animate-on-scroll delay-2">
+                    <img src="../image/智能温室大棚示范园.png" alt="智能温室大棚示范园" class="project-image">
+                    <div class="project-overlay">
+                        <span class="project-tag">设施农业</span>
+                        <h3 class="project-title">智能温室大棚示范园</h3>
+                        <p class="project-description">全自动环境控制系统，蔬菜产量提升40%，品质显著提高</p>
+                    </div>
+                </div>
+                <div class="project-card animate-on-scroll delay-3">
+                  <img src="../image/北稻智联智能管理系统.jpeg" alt="北稻智联智能管理系统" class="project-image">
+                    <div class="project-overlay">
+                        <span class="project-tag">智慧管理</span>
+                        <h3 class="project-title">北稻智联智能管理系统</h3>
+                        <p class="project-description">精准水肥一体化，病虫害智能预警，作物品质大幅提升</p>
+                  </div>
+                </div>
+                <div class="project-card animate-on-scroll delay-4">
+                    <img src="../image/农产品溯源体系.jpeg" alt="农产品溯源体系建设" class="project-image">
+                    <div class="project-overlay">
+                        <span class="project-tag">农产品溯源</span>
+                        <h3 class="project-title">农产品溯源体系建设</h3>
+                        <p class="project-description">全程可追溯，消费者放心购买，产品溢价能力显著增强</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 数据展示 -->
+    <section class="section stats" id="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item animate-on-scroll delay-1">
+                    <h3 class="counter" data-target="500">0</h3>
+                    <p>服务客户</p>
+                </div>
+                <div class="stat-item animate-on-scroll delay-2">
+                    <h3 class="counter" data-target="1000000">0</h3>
+                    <p>覆盖农田面积(亩)</p>
+                </div>
+                <div class="stat-item animate-on-scroll delay-3">
+                    <h3 class="counter" data-target="30">0</h3>
+                    <p>平均增产(%)</p>
+                </div>
+                <div class="stat-item animate-on-scroll delay-4">
+                    <h3 class="counter" data-target="25">0</h3>
+                    <p>节水节肥(%)</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 联系我们 -->
+    <section class="section contact" id="contact">
+        <div class="container">
+            <div class="section-title animate-on-scroll">
+                <h2>联系我们</h2>
+                <p>如有任何问题或需求，欢迎随时与我们联系</p>
+            </div>
+
+            <div class="contact-content">
+                <div class="contact-info animate-on-scroll">
+                    <h3>联系方式</h3>
+                    <div class="contact-item">
+                        <i class="fa fa-map-marker"></i>
+                        <div>
+                            <h4>地址</h4>
+                            <p>吉林省四平市铁西区吉林师范大学博达学院</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fa fa-phone"></i>
+                        <div>
+                            <h4>电话</h4>
+                            <p>400-88888888</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fa fa-envelope"></i>
+                        <div>
+                            <h4>邮箱</h4>
+                            <p>bdzltechnology@163.com</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fa fa-clock-o"></i>
+                        <div>
+                            <h4>工作时间</h4>
+                            <p>周一至周五 9:00-18:00</p>
+                        </div>
+                    </div>
+                </div>
+                <form class="contact-form animate-on-scroll delay-2">
+                    <input type="text" placeholder="您的姓名" required>
+                    <input type="email" placeholder="您的邮箱" required>
+                    <input type="tel" placeholder="您的电话">
+                    <textarea placeholder="您的留言" required></textarea>
+                    <button type="submit" class="btn">提交留言</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>北稻智联</h3>
+                    <p>专注于智慧农业技术研发与应用，</p>
+                    <p>致力于推动农业现代化发展。</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fa fa-weixin"></i></a>
+                        <a href="#"><i class="fa fa-weibo"></i></a>
+                        <a href="#"><i class="fa fa-qq"></i></a>
+                        <a href="#"><i class="fa fa-linkedin"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>快速链接</h3>
+                    <ul>
+                        <li><a href="#home">首页</a></li>
+                        <li><a href="#video">视频</a></li>
+                        <li><a href="#services">服务</a></li>
+                        <li><a href="#advantages">优势</a></li>
+                        <li><a href="#projects">项目案例</a></li>
+                        <li><a href="#stats">数据</a></li>
+                        <li><a href="#contact">联系我们</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>解决方案</h3>
+                    <ul>
+                        <li><a href="#">大田种植</a></li>
+                        <li><a href="#">温室大棚</a></li>
+                        <li><a href="#">果园管理</a></li>
+                        <li><a href="#">畜牧养殖</a></li>
+                        <li><a href="#">水产养殖</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>关于我们</h3>
+                    <ul>
+                        <li><a href="#">公司简介</a></li>
+                        <li><a href="#">新闻动态</a></li>
+                        <li><a href="#">招贤纳士</a></li>
+                        <li><a href="#">合作伙伴</a></li>
+                        <li><a href="#">隐私政策</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 北稻智联科技有限公司 版权所有 | 京ICP备12345678号</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 回到顶部按钮 -->
+    <div class="back-to-top" id="backToTop">
+        <i class="fa fa-arrow-up"></i>
+    </div>
+
+    <!-- 监测系统模态框 -->
+    <div class="modal" id="systemModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>北稻智联智慧农业系统</h3>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <iframe src="monitor.html" frameborder="0" class="system-iframe" id="systemIframe"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载动画
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('pageLoader').classList.add('hidden');
+            }, 1000);
+        });
+
+        // 导航栏滚动效果
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // 移动端菜单
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // 关闭移动端菜单
+                    navLinks.classList.remove('active');
+                }
+            });
+        });
+
+        // 视频播放控制
+        const videoPlayer = document.getElementById('videoPlayer');
+        const videoPlayBtn = document.getElementById('videoPlayBtn');
+        const ctrlPlay = document.getElementById('ctrlPlay');
+        const progressBar = document.getElementById('progressBar');
+        const progressBuffer = document.getElementById('progressBuffer');
+        const progressWrap = document.getElementById('progressWrap');
+        const videoTime = document.getElementById('videoTime');
+        const volumeBtn = document.getElementById('volumeBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeBar = document.getElementById('volumeBar');
+        const speedSelect = document.getElementById('speedSelect');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+        // 播放/暂停
+        function togglePlay() {
+            if (videoPlayer.paused) {
+                videoPlayer.play();
+                videoPlayBtn.innerHTML = '<i class="fa fa-pause"></i>';
+                ctrlPlay.innerHTML = '<i class="fa fa-pause"></i>';
+                videoPlayBtn.style.opacity = '0';
+            } else {
+                videoPlayer.pause();
+                videoPlayBtn.innerHTML = '<i class="fa fa-play"></i>';
+                ctrlPlay.innerHTML = '<i class="fa fa-play"></i>';
+                videoPlayBtn.style.opacity = '1';
+            }
+        }
+
+        videoPlayBtn.addEventListener('click', togglePlay);
+        ctrlPlay.addEventListener('click', togglePlay);
+        videoPlayer.addEventListener('click', togglePlay);
+
+        // 时间格式化
+        function formatTime(seconds) {
+            const min = Math.floor(seconds / 60);
+            const sec = Math.floor(seconds % 60);
+            return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+        }
+
+        // 更新进度条
+        videoPlayer.addEventListener('timeupdate', () => {
+            const percent = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+            progressBar.style.width = percent + '%';
+            videoTime.textContent = `${formatTime(videoPlayer.currentTime)} / ${formatTime(videoPlayer.duration)}`;
+        });
+
+        // 缓冲进度
+        videoPlayer.addEventListener('progress', () => {
+            if (videoPlayer.buffered.length > 0) {
+                const bufferedEnd = videoPlayer.buffered.end(videoPlayer.buffered.length - 1);
+                const percent = (bufferedEnd / videoPlayer.duration) * 100;
+                progressBuffer.style.width = percent + '%';
+            }
+        });
+
+        // 拖动进度条
+        progressWrap.addEventListener('click', (e) => {
+            const rect = progressWrap.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            videoPlayer.currentTime = pos * videoPlayer.duration;
+        });
+
+        // 音量控制
+        volumeSlider.addEventListener('click', (e) => {
+            const rect = volumeSlider.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            videoPlayer.volume = pos;
+            volumeBar.style.width = pos * 100 + '%';
+            updateVolumeIcon();
+        });
+
+        // 静音切换
+        volumeBtn.addEventListener('click', () => {
+            videoPlayer.muted = !videoPlayer.muted;
+            updateVolumeIcon();
+        });
+
+        function updateVolumeIcon() {
+            if (videoPlayer.muted || videoPlayer.volume === 0) {
+                volumeBtn.innerHTML = '<i class="fa fa-volume-off"></i>';
+            } else if (videoPlayer.volume < 0.5) {
+                volumeBtn.innerHTML = '<i class="fa fa-volume-down"></i>';
+            } else {
+                volumeBtn.innerHTML = '<i class="fa fa-volume-up"></i>';
+            }
+        }
+
+        // 播放速度
+        speedSelect.addEventListener('change', () => {
+            videoPlayer.playbackRate = speedSelect.value;
+        });
+
+        // 全屏
+        fullscreenBtn.addEventListener('click', () => {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                videoPlayer.requestFullscreen().catch(err => {
+                    console.log('全屏请求失败');
+                });
+            }
+        });
+
+        // 视频结束
+        videoPlayer.addEventListener('ended', () => {
+            videoPlayBtn.innerHTML = '<i class="fa fa-play"></i>';
+            ctrlPlay.innerHTML = '<i class="fa fa-play"></i>';
+            videoPlayBtn.style.opacity = '1';
+        });
+
+        // 滚动触发动画
+        const animateElements = document.querySelectorAll('.animate-on-scroll');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                    
+                    // 数字计数动画
+                    if (entry.target.classList.contains('stat-item')) {
+                        const counter = entry.target.querySelector('.counter');
+                        const target = parseInt(counter.getAttribute('data-target'));
+                        animateCounter(counter, target);
+                    }
+                }
+            });
+        }, { threshold: 0.1 });
+
+        animateElements.forEach(element => {
+            observer.observe(element);
+        });
+
+        // 数字计数动画函数
+        function animateCounter(element, target) {
+            let current = 0;
+            const increment = target / 100;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    clearInterval(timer);
+                    current = target;
+                }
+                
+                if (target >= 1000000) {
+                    element.textContent = Math.floor(current / 10000) / 100 + '万+';
+                } else if (target >= 1000) {
+                    element.textContent = Math.floor(current).toLocaleString() + '+';
+                } else {
+                    element.textContent = Math.floor(current);
+                }
+            }, 20);
+        }
+
+        // 系统模态框
+        const systemPreviewCard = document.getElementById('systemPreviewCard');
+        const managePreviewCard = document.getElementById('managePreviewCard');
+        const systemModal = document.getElementById('systemModal');
+        const modalClose = document.getElementById('modalClose');
+        const systemIframe = document.getElementById('systemIframe');
+        const modalTitle = document.querySelector('.modal-header h3');
+
+        // 打开智能管理系统
+        managePreviewCard.addEventListener('click', () => {
+            modalTitle.textContent = '北稻智联智能管理系统';
+            systemModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            systemIframe.src = "../html/北稻智联智能管理系统.html";
+        });
+
+        // 打开实时监测系统（保持 monitor.html）
+        systemPreviewCard.addEventListener('click', () => {
+            modalTitle.textContent = '北稻智联智慧农业监测系统';
+            systemModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            systemIframe.src = "monitor.html";
+        });
+
+        // 关闭模态框
+        modalClose.addEventListener('click', () => {
+            systemModal.classList.remove('active');
+            document.body.style.overflow = '';
+            systemIframe.src = systemIframe.src;
+        });
+
+        // 点击模态框背景关闭
+        systemModal.addEventListener('click', (e) => {
+            if (e.target === systemModal) {
+                systemModal.classList.remove('active');
+                document.body.style.overflow = '';
+                systemIframe.src = systemIframe.src;
+            }
+        });
+
+        // ESC键关闭模态框
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && systemModal.classList.contains('active')) {
+                systemModal.classList.remove('active');
+                document.body.style.overflow = '';
+                systemIframe.src = systemIframe.src;
+            }
+        });
+
+        // 表单提交
+        document.querySelector('.contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('感谢您的留言！我们会尽快与您联系。');
+            this.reset();
+        });
+
+        // 回到顶部按钮
+        const backToTop = document.getElementById('backToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+</body>
+</html>
