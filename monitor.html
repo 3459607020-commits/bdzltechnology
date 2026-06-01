@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>北稻智联智慧农业监测系统</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <!-- 替换为国内稳定的Font Awesome CDN -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 替换为国内稳定的Chart.js CDN -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/Chart.js/4.4.8/chart.umd.min.js"></script>
     
     <!-- Tailwind 配置 -->
     <script>
@@ -103,7 +105,7 @@
         
         /* 地图背景 */
         .map-container {
-            background-image: url('../image/北方稻田高空实拍图生成.png');
+            background-image: url('https://picsum.photos/seed/rice-field/1920/1080');
             background-size: cover;
             background-position: center;
         }
@@ -176,7 +178,7 @@
                 <!-- 实时视频 -->
                 <div class="p-3 border-b border-primary/30">
                     <div class="relative rounded overflow-hidden border border-primary/30 h-40">
-                        <img src="../image/北方稻田高空实拍图生成.png" alt="实时监控" class="w-full h-full object-cover">
+                        <img src="https://picsum.photos/seed/rice-drone/800/600" alt="实时监控" class="w-full h-full object-cover">
                         <div class="absolute top-2 left-2 bg-danger/80 text-white text-xs px-2 py-1 rounded flex items-center">
                             <span class="w-2 h-2 rounded-full bg-white mr-2 animate-pulse"></span>
                             实时直播
@@ -415,7 +417,7 @@
                             </div>
                             <p class="text-sm mb-2">在 三号农田东侧 发现了生物破坏事件</p>
                             <div class="rounded overflow-hidden border border-primary/30 h-24">
-                                <img src="../image/381b22b9779137beb8dfe8179fa7394e.jpg" alt="事件图片" class="w-full h-full object-cover">
+                                <img src="https://picsum.photos/seed/pest/400/300" alt="事件图片" class="w-full h-full object-cover">
                             </div>
                         </div>
                         
