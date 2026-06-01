@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>北稻智联智慧农业监测系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2E7D32', // 主绿色
+                        secondary: '#1976D2', // 主蓝色
+                        accent: '#F57C00', // 橙色强调
+                        success: '#43A047',
+                        warning: '#FFB300',
+                        danger: '#E53935',
+                        dark: '#263238',
+                        light: '#F5F7FA'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .card-shadow {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            }
+            .sidebar-item-active {
+                @apply bg-primary/10 text-primary border-l-4 border-primary;
+            }
+            .animate-fade-in {
+                animation: fadeIn 0.5s ease-in-out;
+            }
+            .animate-slide-up {
+                animation: slideUp 0.4s ease-out;
+            }
+            .animate-number {
+                animation: numberChange 1s ease-out;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes numberChange {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+    </style>
+</head>
+<body class="bg-light font-sans text-dark antialiased">
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边栏 -->
+        <aside id="sidebar" class="w-64 bg-white shadow-lg transition-all duration-300 ease-in-out z-20">
+            <div class="flex items-center justify-between p-4 border-b">
+                <div class="flex items-center space-x-2">
+                    <i class="fa fa-leaf text-primary text-2xl"></i>
+                    <h1 class="text-xl font-bold text-primary">北稻智联</h1>
+                </div>
+                <button id="sidebar-toggle" class="lg:hidden text-gray-500 hover:text-primary">
+                    <i class="fa fa-bars"></i>
+                </button>
+            </div>
+            
+            <div class="py-4">
+                <p class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">主菜单</p>
+                <ul class="space-y-1">
+                    <li>
+                        <a href="#dashboard" class="sidebar-item-active flex items-center px-4 py-3 text-sm font-medium transition-colors duration-200">
+                            <i class="fa fa-dashboard w-5 mr-3"></i>
+                            <span>数据仪表盘</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#monitoring" class="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors duration-200">
+                            <i class="fa fa-line-chart w-5 mr-3"></i>
+                            <span>实时监测</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#devices" class="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors duration-200">
+                            <i class="fa fa-microchip w-5 mr-3"></i>
+                            <span>设备管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#fields" class="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors duration-200">
+                            <i class="fa fa-map-o w-5 mr-3"></i>
+                            <span>农田管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#analysis" class="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors duration-200">
+                            <i class="fa fa-bar-chart w-5 mr-3"></i>
+                            <span>数据分析</span>
+                        </a>
+                    </li>
+					<li>
+                        <a href="#traceability" class="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors duration-200">
+                            <i class="fa fa-map-o w-5 mr-3"></i>
+                            <span>农产品溯源</span>
+                        </a>
+                    </li>
+                </ul>
+                
+                <p class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-6 mb-2">系统功能</p>
+                <ul class="space-y-1">
+                    <li>
+                        <a href="#alerts" class="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors duration-200">
+                            <i class="fa fa-bell w-5 mr-3"></i>
+                            <span>预警中心</span>
+                            <span class="ml-auto bg-danger text-white text-xs font-bold px-2 py-1 rounded-full">3</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#irrigation" class="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors duration-200">
+                            <i class="fa fa-tint w-5 mr-3"></i>
+                            <span>智能灌溉</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#reports" class="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors duration-200">
+                            <i class="fa fa-file-text-o w-5 mr-3"></i>
+                            <span>报表中心</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#settings" class="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors duration-200">
+                            <i class="fa fa-cog w-5 mr-3"></i>
+                            <span>系统设置</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="absolute bottom-0 w-full border-t p-4">
+                <div class="flex items-center">
+                    <img src="https://picsum.photos/id/1005/40/40" alt="用户头像" class="w-10 h-10 rounded-full object-cover">
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">管理员</p>
+                        <p class="text-xs text-gray-500">admin@beidaozhilian.com</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- 顶部导航栏 -->
+            <header class="bg-white shadow-sm z-10">
+                <div class="flex items-center justify-between h-16 px-6">
+                    <div class="flex items-center">
+                        <button id="mobile-menu-button" class="lg:hidden mr-4 text-gray-500 hover:text-primary">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <h2 class="text-lg font-semibold">数据仪表盘</h2>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <button class="text-gray-500 hover:text-primary focus:outline-none">
+                                <i class="fa fa-bell-o text-lg"></i>
+                                <span class="absolute -top-1 -right-1 bg-danger text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">3</span>
+                            </button>
+                        </div>
+                        
+                        <div class="relative">
+                            <button class="text-gray-500 hover:text-primary focus:outline-none">
+                                <i class="fa fa-cog text-lg"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="border-l pl-4">
+                            <button class="flex items-center text-gray-700 hover:text-primary focus:outline-none">
+                                <span class="mr-2">中文</span>
+                                <i class="fa fa-chevron-down text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 页面内容 -->
+            <main class="flex-1 overflow-y-auto p-6 bg-gray-50">
+                <!-- 概览卡片 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <!-- 温度卡片 -->
+                    <div class="bg-white rounded-lg card-shadow p-5 animate-slide-up" style="animation-delay: 0.1s">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500 text-sm">环境温度</p>
+                                <h3 class="text-3xl font-bold mt-1 animate-number" id="temperature">24.5°C</h3>
+                                <p class="text-sm mt-2">
+                                    <span class="text-success"><i class="fa fa-arrow-up"></i> 1.2°C</span>
+                                    <span class="text-gray-500 ml-1">较昨日</span>
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
+                                <i class="fa fa-thermometer-half text-red-500 text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 h-1 bg-gray-200 rounded-full overflow-hidden">
+                            <div class="bg-red-500 h-full rounded-full" style="width: 65%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 湿度卡片 -->
+                    <div class="bg-white rounded-lg card-shadow p-5 animate-slide-up" style="animation-delay: 0.2s">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500 text-sm">空气湿度</p>
+                                <h3 class="text-3xl font-bold mt-1 animate-number" id="humidity">68%</h3>
+                                <p class="text-sm mt-2">
+                                    <span class="text-danger"><i class="fa fa-arrow-down"></i> 3%</span>
+                                    <span class="text-gray-500 ml-1">较昨日</span>
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
+                                <i class="fa fa-tint text-blue-500 text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 h-1 bg-gray-200 rounded-full overflow-hidden">
+                            <div class="bg-blue-500 h-full rounded-full" style="width: 68%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 土壤湿度卡片 -->
+                    <div class="bg-white rounded-lg card-shadow p-5 animate-slide-up" style="animation-delay: 0.3s">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500 text-sm">土壤湿度</p>
+                                <h3 class="text-3xl font-bold mt-1 animate-number" id="soil-moisture">52%</h3>
+                                <p class="text-sm mt-2">
+                                    <span class="text-success"><i class="fa fa-arrow-up"></i> 5%</span>
+                                    <span class="text-gray-500 ml-1">较昨日</span>
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center">
+                                <i class="fa fa-pagelines text-amber-600 text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 h-1 bg-gray-200 rounded-full overflow-hidden">
+                            <div class="bg-amber-500 h-full rounded-full" style="width: 52%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 光照强度卡片 -->
+                    <div class="bg-white rounded-lg card-shadow p-5 animate-slide-up" style="animation-delay: 0.4s">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500 text-sm">光照强度</p>
+                                <h3 class="text-3xl font-bold mt-1 animate-number" id="light">32,500 lux</h3>
+                                <p class="text-sm mt-2">
+                                    <span class="text-success"><i class="fa fa-arrow-up"></i> 12%</span>
+                                    <span class="text-gray-500 ml-1">较昨日</span>
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-yellow-50 flex items-center justify-center">
+                                <i class="fa fa-sun-o text-yellow-500 text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 h-1 bg-gray-200 rounded-full overflow-hidden">
+                            <div class="bg-yellow-500 h-full rounded-full" style="width: 78%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 图表区域 -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <!-- 环境参数趋势图 -->
+                    <div class="lg:col-span-2 bg-white rounded-lg card-shadow p-5 animate-fade-in">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-semibold text-lg">环境参数趋势</h3>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 text-xs bg-primary/10 text-primary rounded-full">今日</button>
+                                <button class="px-3 py-1 text-xs bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200">本周</button>
+                                <button class="px-3 py-1 text-xs bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200">本月</button>
+                            </div>
+                        </div>
+                        <div class="h-80">
+                            <canvas id="environmentChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- 农田状态分布 -->
+                    <div class="bg-white rounded-lg card-shadow p-5 animate-fade-in">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-semibold text-lg">农田状态分布</h3>
+                            <button class="text-gray-500 hover:text-primary">
+                                <i class="fa fa-refresh"></i>
+                            </button>
+                        </div>
+                        <div class="h-80">
+                            <canvas id="fieldStatusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 底部区域 -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- 实时预警 -->
+                    <div class="bg-white rounded-lg card-shadow p-5 animate-fade-in">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-semibold text-lg">实时预警</h3>
+                            <a href="#alerts" class="text-primary text-sm hover:underline">查看全部</a>
+                        </div>
+                        <div class="space-y-4 max-h-80 overflow-y-auto">
+                            <div class="flex items-start p-3 bg-danger/5 border-l-4 border-danger rounded-r-md">
+                                <i class="fa fa-exclamation-circle text-danger mt-1 mr-3"></i>
+                                <div>
+                                    <p class="font-medium text-sm">土壤湿度过低</p>
+                                    <p class="text-xs text-gray-500 mt-1">一号农田东区土壤湿度低于30%阈值</p>
+                                    <p class="text-xs text-gray-400 mt-2">10分钟前</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start p-3 bg-warning/5 border-l-4 border-warning rounded-r-md">
+                                <i class="fa fa-exclamation-triangle text-warning mt-1 mr-3"></i>
+                                <div>
+                                    <p class="font-medium text-sm">设备离线</p>
+                                    <p class="text-xs text-gray-500 mt-1">三号农田传感器S-032离线超过1小时</p>
+                                    <p class="text-xs text-gray-400 mt-2">45分钟前</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start p-3 bg-warning/5 border-l-4 border-warning rounded-r-md">
+                                <i class="fa fa-exclamation-triangle text-warning mt-1 mr-3"></i>
+                                <div>
+                                    <p class="font-medium text-sm">温度异常</p>
+                                    <p class="text-xs text-gray-500 mt-1">二号农田夜间温度低于15℃</p>
+                                    <p class="text-xs text-gray-400 mt-2">2小时前</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 设备状态 -->
+                    <div class="bg-white rounded-lg card-shadow p-5 animate-fade-in">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-semibold text-lg">设备状态</h3>
+                            <a href="#devices" class="text-primary text-sm hover:underline">查看全部</a>
+                        </div>
+                        <div class="space-y-3 max-h-80 overflow-y-auto">
+                            <div class="flex items-center justify-between p-3 border-b">
+                                <div class="flex items-center">
+                                    <div class="w-2 h-2 rounded-full bg-success mr-3"></div>
+                                    <span class="text-sm">温湿度传感器 S-001</span>
+                                </div>
+                                <span class="text-xs text-gray-500">一号农田</span>
+                            </div>
+                            
+                            <div class="flex items-center justify-between p-3 border-b">
+                                <div class="flex items-center">
+                                    <div class="w-2 h-2 rounded-full bg-success mr-3"></div>
+                                    <span class="text-sm">土壤传感器 S-015</span>
+                                </div>
+                                <span class="text-xs text-gray-500">一号农田</span>
+                            </div>
+                            
+                            <div class="flex items-center justify-between p-3 border-b">
+                                <div class="flex items-center">
+                                    <div class="w-2 h-2 rounded-full bg-danger mr-3"></div>
+                                    <span class="text-sm">土壤传感器 S-032</span>
+                                </div>
+                                <span class="text-xs text-gray-500">三号农田</span>
+                            </div>
+                            
+                            <div class="flex items-center justify-between p-3 border-b">
+                                <div class="flex items-center">
+                                    <div class="w-2 h-2 rounded-full bg-success mr-3"></div>
+                                    <span class="text-sm">光照传感器 L-008</span>
+                                </div>
+                                <span class="text-xs text-gray-500">二号农田</span>
+                            </div>
+                            
+                            <div class="flex items-center justify-between p-3 border-b">
+                                <div class="flex items-center">
+                                    <div class="w-2 h-2 rounded-full bg-success mr-3"></div>
+                                    <span class="text-sm">气象站 M-002</span>
+                                </div>
+                                <span class="text-xs text-gray-500">中心区域</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 农田概览 -->
+                    <div class="bg-white rounded-lg card-shadow p-5 animate-fade-in">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-semibold text-lg">农田概览</h3>
+                            <a href="#fields" class="text-primary text-sm hover:underline">查看全部</a>
+                        </div>
+                        <div class="space-y-4 max-h-80 overflow-y-auto">
+                            <div class="border rounded-lg overflow-hidden">
+                                <div class="relative h-32">
+                                    <img src="../image/北方稻田高空实拍图生成.png" alt="一号农田" class="w-full h-full object-cover">
+                                    <div class="absolute top-2 right-2 bg-success/90 text-white text-xs px-2 py-1 rounded">正常</div>
+                                </div>
+                                <div class="p-3">
+                                    <h4 class="font-medium">一号农田 - 水稻种植区</h4>
+                                    <div class="flex justify-between mt-2 text-xs text-gray-500">
+                                        <span>面积: 120亩</span>
+                                        <span>作物: 水稻(生长期)</span>
+                                    </div>
+                                    <div class="mt-2 flex items-center text-xs">
+                                        <span class="text-gray-500 mr-2">设备:</span>
+                                        <span class="text-success">18台在线</span>
+                                        <span class="text-gray-400 mx-1">|</span>
+                                        <span class="text-danger">0台离线</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border rounded-lg overflow-hidden">
+                                <div class="relative h-32">
+                                    <img src="../image/381b22b9779137beb8dfe8179fa7394e.jpg" alt="二号农田" class="w-full h-full object-cover">
+                                    <div class="absolute top-2 right-2 bg-warning/90 text-white text-xs px-2 py-1 rounded">注意</div>
+                                </div>
+                                <div class="p-3">
+                                    <h4 class="font-medium">二号农田 - 水稻种植区</h4>
+                                    <div class="flex justify-between mt-2 text-xs text-gray-500">
+                                        <span>面积: 95亩</span>
+                                        <span>作物: 水稻(生长期)</span>
+                                    </div>
+                                    <div class="mt-2 flex items-center text-xs">
+                                        <span class="text-gray-500 mr-2">设备:</span>
+                                        <span class="text-success">14台在线</span>
+                                        <span class="text-gray-400 mx-1">|</span>
+                                        <span class="text-danger">1台离线</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        // 侧边栏切换
+        document.getElementById('sidebar-toggle').addEventListener('click', toggleSidebar);
+        document.getElementById('mobile-menu-button').addEventListener('click', toggleSidebar);
+        
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        }
+        
+        // 响应式处理
+        function handleResize() {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth < 1024) {
+                sidebar.classList.add('-translate-x-full');
+            } else {
+                sidebar.classList.remove('-translate-x-full');
+            }
+        }
+        
+        window.addEventListener('resize', handleResize);
+        handleResize(); // 初始化
+        
+        // 环境参数趋势图
+        const envCtx = document.getElementById('environmentChart').getContext('2d');
+        const environmentChart = new Chart(envCtx, {
+            type: 'line',
+            data: {
+                labels: ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00'],
+                datasets: [
+                    {
+                        label: '温度(°C)',
+                        data: [18, 17, 16, 20, 26, 28, 25, 22],
+                        borderColor: '#E53935',
+                        backgroundColor: 'rgba(229, 57, 53, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: '湿度(%)',
+                        data: [75, 78, 80, 72, 65, 60, 68, 72],
+                        borderColor: '#1976D2',
+                        backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: '土壤湿度(%)',
+                        data: [48, 49, 50, 51, 52, 53, 52, 52],
+                        borderColor: '#F57C00',
+                        backgroundColor: 'rgba(245, 124, 0, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        grid: {
+                            borderDash: [2, 4],
+                        }
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                }
+            }
+        });
+        
+        // 农田状态分布图
+        const fieldCtx = document.getElementById('fieldStatusChart').getContext('2d');
+        const fieldStatusChart = new Chart(fieldCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['正常', '需关注', '预警', '离线'],
+                datasets: [{
+                    data: [65, 20, 10, 5],
+                    backgroundColor: [
+                        '#43A047',
+                        '#FFB300',
+                        '#E53935',
+                        '#757575'
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    }
+                },
+                cutout: '65%'
+            }
+        });
+        
+        // 模拟数据更新
+        function updateData() {
+            // 更新温度
+            const temp = (23 + Math.random() * 3).toFixed(1);
+            document.getElementById('temperature').textContent = temp + '°C';
+            
+            // 更新湿度
+            const humidity = Math.floor(65 + Math.random() * 7);
+            document.getElementById('humidity').textContent = humidity + '%';
+            
+            // 更新土壤湿度
+            const soilMoisture = Math.floor(50 + Math.random() * 5);
+            document.getElementById('soil-moisture').textContent = soilMoisture + '%';
+            
+            // 更新光照强度
+            const light = Math.floor(30000 + Math.random() * 5000);
+            document.getElementById('light').textContent = light.toLocaleString() + ' lux';
+            
+            // 每30秒更新一次
+            setTimeout(updateData, 30000);
+        }
+        
+        // 启动数据更新
+        setTimeout(updateData, 5000);
+    </script>
+</body>
+</html>
